@@ -7,6 +7,10 @@ declare global {
       DB_HOST: string;
       DB_PORT: number;
       SECRET_KEY: string;
+      SUPABASE_PUBLIC_KEY: string;
+      SUPABASE_SERVICE_ROLE: string;
+      SUPABASE_URL: string;
+      SUPABASE_JWT: string;
     }
   }
 }

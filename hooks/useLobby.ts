@@ -1,8 +1,7 @@
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-
-const SERVER_URL = "http://localhost:3000/";
 
 export const useLobby = () => {
   const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap> | null>(
@@ -11,10 +10,12 @@ export const useLobby = () => {
 
   const [roomId, setRoomId] = useState<number | null>(null);
 
+  const router = useRouter();
+
   useEffect(() => {
     const initSockets = async () => {
-      await fetch("/api/socket");
-      socketRef.current = io(SERVER_URL);
+      await fetch("/api/sockets/lobby");
+      socketRef.current = io();
 
       socketRef.current.on("room-created", (msg) => {
         console.log("room-created ", msg);
@@ -25,8 +26,9 @@ export const useLobby = () => {
         console.log("room-not-found", msg);
       });
 
-      socketRef.current.on("room-joined", (msg) => {
-        console.log("room-joined", msg);
+      socketRef.current.on("room-gathered", (msg) => {
+        localStorage.setItem("session", JSON.stringify(msg));
+        router.push("/game");
       });
     };
 

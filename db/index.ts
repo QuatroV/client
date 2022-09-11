@@ -1,12 +1,9 @@
-import { Sequelize } from "sequelize";
+import { createClient } from "@supabase/supabase-js";
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  { dialect: "postgres", host: process.env.DB_HOST, port: process.env.DB_PORT }
+// Create a single supabase client for interacting with your database
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PUBLIC_KEY
 );
 
-sequelize.sync({ alter: true });
-
-export default sequelize;
+export default supabase;

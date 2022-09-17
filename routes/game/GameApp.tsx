@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import styled, { css } from "styled-components";
 import { useGame } from "../../hooks/useGame";
+import Modal from "../shared/Modal";
 import Dice from "./components/Dice";
 
 const GameApp = ({
@@ -20,6 +22,7 @@ const GameApp = ({
     currentDice,
     myScore,
     opponentScore,
+    winner,
   } = useGame(socket);
 
   if (!gameState || !currentPlayer || !opponentPlayer || !currentDice) {
@@ -50,8 +53,14 @@ const GameApp = ({
     makeTurn(newState);
   };
 
+  const handleCloseEndGameModal = () => setPage("home");
+
   return (
     <GameAppContainer>
+      <Modal isOpen={Boolean(winner)} onClose={handleCloseEndGameModal}>
+        <p>{winner === currentPlayer ? "You won!!!" : "You lost :("}</p>
+        <button onClick={handleCloseEndGameModal}>Return to main page</button>
+      </Modal>
       <BoardsContainer>
         <Board $isActive={activePlayer === opponentPlayer}>
           <Column>

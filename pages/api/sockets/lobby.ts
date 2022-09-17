@@ -29,6 +29,32 @@ const calcTotalScore = (arr: number[][]) => {
   }, 0);
 };
 
+const deleteDuplicates = (
+  obj: Record<string, number[][]>,
+  currentPlayer: string
+) => {
+  const currentPlayerBoard = obj[currentPlayer];
+  const opponentId = Object.keys(obj).find((key) => key !== currentPlayer);
+  if (!opponentId) {
+    return;
+  }
+  const opponentPlayerBoard = obj[opponentId];
+
+  for (let i = 0; i < 3; ++i) {
+    const uniqueSet = new Set(currentPlayerBoard[i]);
+    opponentPlayerBoard[i].forEach((el, index, arr) => {
+      if (uniqueSet.has(el)) {
+        arr[index] = 0;
+      }
+    });
+  }
+
+  return {
+    [currentPlayer]: currentPlayerBoard,
+    [opponentId]: opponentPlayerBoard,
+  };
+};
+
 const SocketHandler = (req: any, res: any) => {
   if (res.socket.server.io) {
     console.log("Socket is already running");
@@ -79,29 +105,43 @@ const SocketHandler = (req: any, res: any) => {
 
       socket.on("turn-request", async (msg) => {
         console.log("turn requset ", msg);
-        const session = await updateGameStateInSession(
-          msg.sessionId,
-          msg.newGameState
-        );
+
+        const { sessionId, newGameState } = msg;
+
+        const gameState = deleteDuplicates(newGameState, socket.id);
+
+        const session = await updateGameStateInSession(sessionId, gameState);
         if (!session || !session.gameState || !session.secondUserId) {
           console.error("Missing properties");
           return;
         }
+        const { firstUserId, secondUserId } = session;
         const scores = {
-          [session.firstUserId]: calcTotalScore(
-            session.gameState[session.firstUserId]
-          ),
+          [firstUserId]: calcTotalScore(session.gameState[firstUserId]),
 
-          [session.secondUserId]: calcTotalScore(
-            session.gameState[session.secondUserId]
-          ),
+          [secondUserId]: calcTotalScore(session.gameState[secondUserId]),
         };
-        const currentDice = generateDiceSide();
-        io.to(String(msg.roomId)).emit("turn-start", {
-          ...session,
-          currentDice,
-          scores,
-        });
+
+        const isFullBoard = Object.values(gameState!).some((board) =>
+          board.flat().every((el) => el !== 0)
+        );
+
+        if (isFullBoard) {
+          const winner =
+            scores[firstUserId] > scores[secondUserId]
+              ? firstUserId
+              : secondUserId;
+          io.to(String(msg.roomId)).emit("game-end", {
+            winner,
+          });
+        } else {
+          const currentDice = generateDiceSide();
+          io.to(String(msg.roomId)).emit("turn-start", {
+            ...session,
+            currentDice,
+            scores,
+          });
+        }
       });
     });
   }

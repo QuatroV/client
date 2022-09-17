@@ -16,6 +16,7 @@ export const useGame = (
   const [currentDice, setCurrentDice] = useState<number | undefined>();
   const [myScore, setMyScore] = useState<number>(0);
   const [opponentScore, setOpponentScore] = useState<number>(0);
+  const [winner, setWinner] = useState();
 
   useEffect(() => {
     const initSockets = async () => {
@@ -69,6 +70,13 @@ export const useGame = (
         setOpponentScore(scores[opponentPlayer.current]);
       });
 
+      socket.on("game-end", (msg) => {
+        console.log("game-end ", msg);
+
+        const { winner } = msg;
+        setWinner(winner);
+      });
+
       socket.emit("player-ready", session);
     };
 
@@ -97,5 +105,6 @@ export const useGame = (
     currentDice,
     myScore,
     opponentScore,
+    winner,
   };
 };

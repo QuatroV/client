@@ -174,7 +174,7 @@ const Column = styled.div`
 const BoardsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 `;
 
 const MyScore = styled.div<{ $isWinning: boolean }>`

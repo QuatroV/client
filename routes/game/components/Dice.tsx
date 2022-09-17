@@ -55,8 +55,8 @@ const Dice = ({ side, onClick }: { side: number; onClick?: () => void }) => {
 };
 
 const DiceSide = styled.div<{ $totalCount: number }>`
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   border-radius: 16px;
   background: white;
   border: 1px solid black;
@@ -150,9 +150,9 @@ const DiceSide = styled.div<{ $totalCount: number }>`
 `;
 
 const Dot = styled.div`
-  height: 16px;
+  height: 12px;
   background-color: black;
-  width: 16px;
+  width: 12px;
   border-radius: 50%;
 `;
 

@@ -46,3 +46,73 @@ export const addSecondUserToSession = async (
     console.error(e);
   }
 };
+
+export const addActivePlayerAndGameStateToSession = async (
+  sessionId: Session["id"]
+) => {
+  console.log("innnnn ", sessionId);
+  try {
+    const { data: oldData, error: oldError } = await supabase
+      .from<Session>("sessions")
+      .select()
+      .eq("id", sessionId);
+
+    if (oldError || !oldData) {
+      throw new Error(oldError.message + oldError.details);
+    }
+
+    const { data, error } = await supabase
+      .from<Session>("sessions")
+      .update({
+        activePlayer: oldData[0].firstUserId,
+        gameState: {
+          [oldData[0].firstUserId]: Array(3).fill(Array(3).fill(0)),
+          [oldData[0].secondUserId!]: Array(3).fill(Array(3).fill(0)),
+        },
+      })
+      .match({ id: sessionId });
+
+    if (error) {
+      throw new Error(error.message + error.details);
+    }
+    return data[0];
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const updateGameStateInSession = async (
+  sessionId: Session["id"],
+  gameState: Session["gameState"]
+) => {
+  try {
+    const { data: oldData, error: oldError } = await supabase
+      .from<Session>("sessions")
+      .select()
+      .eq("id", sessionId);
+
+    if (oldError || !oldData) {
+      throw new Error(oldError.message + oldError.details);
+    }
+
+    const newActivePlayer =
+      oldData[0].activePlayer === oldData[0].firstUserId
+        ? oldData[0].secondUserId
+        : oldData[0].firstUserId;
+
+    console.log("OOOOOOOO ", newActivePlayer);
+
+    const { data, error } = await supabase
+      .from<Session>("sessions")
+      .update({ gameState, activePlayer: newActivePlayer })
+      .match({ id: sessionId });
+    if (error) {
+      throw new Error(error.message + error.details);
+    }
+
+    console.log("datadatadatadata ", JSON.stringify(data[0]));
+    return data[0];
+  } catch (e) {
+    console.error(e);
+  }
+};

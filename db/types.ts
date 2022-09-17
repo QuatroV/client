@@ -3,4 +3,6 @@ export type Session = {
   roomId: number;
   firstUserId: string;
   secondUserId?: string;
+  gameState?: Record<string, number[][]>;
+  activePlayer?: string;
 };

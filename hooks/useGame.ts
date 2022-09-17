@@ -1,37 +1,90 @@
 import { io, Socket } from "socket.io-client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { Session } from "../db/types";
 
-export const useGame = () => {
-  const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap> | null>(
-    null
-  );
+export const useGame = (
+  socket: Socket<DefaultEventsMap, DefaultEventsMap> | null
+) => {
+  const currentPlayer = useRef<string | null>(null);
+  const opponentPlayer = useRef<string | null>(null);
+  const currentSession = useRef<Session | null>(null);
+  const [gameState, getGameState] = useState<
+    Record<string, number[][]> | undefined
+  >(undefined);
+  const [activePlayer, setActivePlayer] = useState<string | undefined>();
+  const [currentDice, setCurrentDice] = useState<number | undefined>();
 
   useEffect(() => {
     const initSockets = async () => {
+      if (!socket) return;
       const sessionFromLocalStore = localStorage.getItem("session");
+      const socketIdFromLocalStore = localStorage.getItem("socketId");
+      if (!socketIdFromLocalStore) {
+        throw new Error("No socketId found in local storage");
+      }
+      currentPlayer.current = JSON.parse(socketIdFromLocalStore);
       if (!sessionFromLocalStore) {
         throw new Error("No session object found in local storage");
       }
       const session = JSON.parse(sessionFromLocalStore);
+      currentSession.current = session;
+      opponentPlayer.current =
+        session.firstUserId === currentPlayer.current
+          ? session.secondUserId
+          : session.firstUserId;
       const urlParams = new URLSearchParams(Object.entries(session));
 
-      await fetch(`/api/sockets/game?${urlParams}`);
-      socketRef.current = io();
-
-      socketRef.current.on("room-created", (msg) => {
-        console.log("room-created ", msg);
+      socket.on("game-start", (msg) => {
+        console.log("aaaaaa123");
+        console.log("game-start ", msg);
+        const {
+          activePlayer: activePlayerFromServer,
+          gameState: gameStateFromServer,
+          currentDice: currentDiceFromServer,
+        } = msg;
+        setActivePlayer(activePlayerFromServer);
+        getGameState(gameStateFromServer);
+        setCurrentDice(currentDiceFromServer);
       });
+
+      socket.on("turn-start", (msg) => {
+        console.log("turn-start ", msg);
+        const {
+          activePlayer: activePlayerFromServer,
+          gameState: gameStateFromServer,
+          currentDice: currentDiceFromServer,
+        } = msg;
+        setActivePlayer(activePlayerFromServer);
+        getGameState(gameStateFromServer);
+        setCurrentDice(currentDiceFromServer);
+      });
+
+      socket.emit("player-ready", session);
     };
 
     initSockets();
+  }, [socket]);
 
-    return () => {
-      if (socketRef.current)
-        // при размонтировании компонента выполняем отключение сокета
-        socketRef.current.disconnect();
-    };
-  }, []);
+  const makeTurn = (newGameState: Record<string, number[][]>) => {
+    if (!socket) {
+      console.error("Socket not connected!");
+      return;
+    }
+    console.log("newGameState ", newGameState);
+    socket.emit("turn-request", {
+      newGameState,
+      sessionId: currentSession.current?.id,
+      roomId: currentSession.current?.roomId,
+    });
+  };
 
-  return {};
+  return {
+    gameState,
+    activePlayer,
+    currentPlayer: currentPlayer.current,
+    opponentPlayer: opponentPlayer.current,
+    makeTurn,
+    currentDice,
+  };
 };

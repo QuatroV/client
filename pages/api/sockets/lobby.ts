@@ -1,10 +1,12 @@
 import { Server } from "socket.io";
 import {
+  addActivePlayerAndGameStateToSession,
   addSecondUserToSession,
   createSession,
   findSessionByRoomId,
+  updateGameStateInSession,
 } from "../../../db/requests";
-import { generateRoomId } from "../../../utils";
+import { generateDiceSide, generateRoomId } from "../../../utils";
 
 const SocketHandler = (req: any, res: any) => {
   if (res.socket.server.io) {
@@ -15,18 +17,16 @@ const SocketHandler = (req: any, res: any) => {
     res.socket.server.io = io;
 
     io.on("connection", (socket) => {
-      socket.on("input-change", (msg) => {
-        socket.broadcast.emit("update-input", msg);
-      });
-
       socket.on("create-room", async (msg) => {
         const roomId = generateRoomId();
+        console.log("roomId ", roomId);
         await createSession({
           roomId: roomId,
           firstUserId: socket.id,
           secondUserId: undefined,
         });
-        socket.emit("room-created", roomId);
+        socket.join(String(roomId));
+        io.to(String(roomId)).emit("room-created", roomId);
       });
 
       socket.on("join-room", async (props) => {
@@ -36,10 +36,37 @@ const SocketHandler = (req: any, res: any) => {
         if (!session) {
           socket.emit("room-not-found", roomId);
         } else {
-          socket.join(roomId);
           const session = await addSecondUserToSession(roomId, socket.id);
-          socket.emit("room-gathered", session);
+          socket.join(String(roomId));
+          io.to(String(roomId)).emit("room-gathered", session);
         }
+      });
+
+      socket.on("player-ready", async (msg) => {
+        console.log("AAAAAAAAAA ", msg, "req.query ", req.query);
+        const { id: sessionId, roomId } = msg;
+        const session = await addActivePlayerAndGameStateToSession(
+          Number(sessionId)
+        );
+        const currentDice = generateDiceSide();
+        console.log("ssesion", session);
+        io.to(String(roomId)).emit("game-start", {
+          ...session,
+          currentDice,
+        });
+      });
+
+      socket.on("turn-request", async (msg) => {
+        console.log("turn requset ", msg);
+        const session = await updateGameStateInSession(
+          msg.sessionId,
+          msg.newGameState
+        );
+        const currentDice = generateDiceSide();
+        io.to(String(msg.roomId)).emit("turn-start", {
+          ...session,
+          currentDice,
+        });
       });
     });
   }

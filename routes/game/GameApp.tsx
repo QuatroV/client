@@ -18,6 +18,8 @@ const GameApp = ({
     makeTurn,
     gameState,
     currentDice,
+    myScore,
+    opponentScore,
   } = useGame(socket);
 
   if (!gameState || !currentPlayer || !opponentPlayer || !currentDice) {
@@ -69,7 +71,9 @@ const GameApp = ({
           </Column>
         </Board>
         <ScoreContainer>
-          <Score>44 / 12</Score>
+          <Score>
+            {myScore} / {opponentScore}
+          </Score>
         </ScoreContainer>
         <Board $isActive={activePlayer === currentPlayer}>
           <Column>

@@ -8,6 +8,27 @@ import {
 } from "../../../db/requests";
 import { generateDiceSide, generateRoomId } from "../../../utils";
 
+const calcTotalScore = (arr: number[][]) => {
+  return arr.reduce((prevRes, col) => {
+    let valObj: Record<string, number> = {};
+    col.forEach((el) => {
+      if (!valObj[el]) {
+        valObj[el] = 1;
+      } else {
+        valObj[el] += 1;
+      }
+    });
+
+    return (
+      prevRes +
+      Object.entries(valObj).reduce(
+        (res, [key, val]) => res + Number(key) * val * val,
+        0
+      )
+    );
+  }, 0);
+};
+
 const SocketHandler = (req: any, res: any) => {
   if (res.socket.server.io) {
     console.log("Socket is already running");
@@ -62,10 +83,24 @@ const SocketHandler = (req: any, res: any) => {
           msg.sessionId,
           msg.newGameState
         );
+        if (!session || !session.gameState || !session.secondUserId) {
+          console.error("Missing properties");
+          return;
+        }
+        const scores = {
+          [session.firstUserId]: calcTotalScore(
+            session.gameState[session.firstUserId]
+          ),
+
+          [session.secondUserId]: calcTotalScore(
+            session.gameState[session.secondUserId]
+          ),
+        };
         const currentDice = generateDiceSide();
         io.to(String(msg.roomId)).emit("turn-start", {
           ...session,
           currentDice,
+          scores,
         });
       });
     });

@@ -14,6 +14,8 @@ export const useGame = (
   >(undefined);
   const [activePlayer, setActivePlayer] = useState<string | undefined>();
   const [currentDice, setCurrentDice] = useState<number | undefined>();
+  const [myScore, setMyScore] = useState<number | undefined>();
+  const [opponentScore, setOpponentScore] = useState<number | undefined>();
 
   useEffect(() => {
     const initSockets = async () => {
@@ -54,10 +56,17 @@ export const useGame = (
           activePlayer: activePlayerFromServer,
           gameState: gameStateFromServer,
           currentDice: currentDiceFromServer,
+          scores,
         } = msg;
         setActivePlayer(activePlayerFromServer);
         getGameState(gameStateFromServer);
         setCurrentDice(currentDiceFromServer);
+        if (!currentPlayer.current || !opponentPlayer.current) {
+          console.error("Missing current or opponent player id");
+          return;
+        }
+        setMyScore(scores[currentPlayer.current]);
+        setOpponentScore(scores[opponentPlayer.current]);
       });
 
       socket.emit("player-ready", session);
@@ -86,5 +95,7 @@ export const useGame = (
     opponentPlayer: opponentPlayer.current,
     makeTurn,
     currentDice,
+    myScore,
+    opponentScore,
   };
 };

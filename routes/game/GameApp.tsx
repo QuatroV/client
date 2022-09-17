@@ -112,7 +112,7 @@ const GameApp = ({
 
 const GameAppContainer = styled.div`
   width: 100%;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background: rgb(0, 39, 154);
   background: radial-gradient(
     circle,
@@ -143,7 +143,8 @@ const Board = styled.div<{ $isActive: boolean }>`
   ${({ $isActive }) =>
     $isActive &&
     css`
-      background: 3px solid rgb(59 255 82 / 41%);
+      outline: 3px solid white;
+      box-shadow: 0 4px 30px rgba(0, 0, 0);
       transform: scale(1.05);
       transition: all 0.5s ease-out;
     `}

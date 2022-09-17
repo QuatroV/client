@@ -79,7 +79,7 @@ const ContentContainer = styled.section`
 
 const HomeAppContainer = styled.div`
   width: 100%;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background: rgb(0, 39, 154);
   background: radial-gradient(
     circle,

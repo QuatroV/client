@@ -72,7 +72,10 @@ const GameApp = ({
         </Board>
         <ScoreContainer>
           <Score>
-            {myScore} / {opponentScore}
+            <MyScore $isWinning={myScore >= opponentScore}>{myScore}</MyScore> /{" "}
+            <OpponentScore $isWinning={myScore <= opponentScore}>
+              {opponentScore}
+            </OpponentScore>
           </Score>
         </ScoreContainer>
         <Board $isActive={activePlayer === currentPlayer}>
@@ -131,6 +134,7 @@ const Board = styled.div<{ $isActive: boolean }>`
   ${({ $isActive }) =>
     $isActive &&
     css`
+      background: 3px solid rgb(59 255 82 / 41%);
       transform: scale(1.05);
       transition: all 0.5s ease-out;
     `}
@@ -149,6 +153,8 @@ const Score = styled.div`
   padding: 16px;
   border: 2px solid white;
   background: rgb(197 197 197 / 28%);
+  display: flex;
+  flex-direction: row;
 `;
 
 const Column = styled.div`
@@ -159,6 +165,14 @@ const BoardsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+`;
+
+const MyScore = styled.div<{ $isWinning: boolean }>`
+  ${({ $isWinning }) => $isWinning && css``}
+`;
+
+const OpponentScore = styled.div<{ $isWinning: boolean }>`
+  ${({ $isWinning }) => $isWinning && css``}
 `;
 
 export default GameApp;

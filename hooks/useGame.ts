@@ -14,8 +14,8 @@ export const useGame = (
   >(undefined);
   const [activePlayer, setActivePlayer] = useState<string | undefined>();
   const [currentDice, setCurrentDice] = useState<number | undefined>();
-  const [myScore, setMyScore] = useState<number | undefined>();
-  const [opponentScore, setOpponentScore] = useState<number | undefined>();
+  const [myScore, setMyScore] = useState<number>(0);
+  const [opponentScore, setOpponentScore] = useState<number>(0);
 
   useEffect(() => {
     const initSockets = async () => {

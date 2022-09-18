@@ -20,6 +20,7 @@ const HomeApp = ({
   const { createRoom, roomId, joinRoom, setRoomId } = useLobby(setPage, socket);
   const [showCreateGameModal, setShowCreateGameModal] = useState(false);
   const [showJoinGameModal, setShowJoinGameModal] = useState(false);
+  const [showRulesModal, setShowRulesModal] = useState(false);
   const [roomCode, setRoomCode] = useState("");
   const [showCode, setShowCode] = useState(true);
 
@@ -55,7 +56,7 @@ const HomeApp = ({
       >
         <ModalContent>
           <ModalTitle>Create game</ModalTitle>
-          <HorizonalLine />
+          <HorizontalLine />
           <ModalText>
             Tell a friend your code below to start game. Game will start
             automatically as your friend connects to your room
@@ -82,7 +83,7 @@ const HomeApp = ({
       >
         <ModalContent>
           <ModalTitle>Join game</ModalTitle>
-          <HorizonalLine />
+          <HorizontalLine />
           <ContentWrapper>
             <ModalText>
               Ask your friend to give you the code to connect to the room
@@ -98,11 +99,42 @@ const HomeApp = ({
           </ContentWrapper>
         </ModalContent>
       </Modal>
+      <Modal isOpen={showRulesModal} onClose={() => setShowRulesModal(false)}>
+        <ModalTitle>Game rules</ModalTitle>
+        <HorizontalLine />
+        <ModalContent>
+          <ContentWrapper>
+            <ModalText>
+              Players turns rolling a six-sided die and placing it in one of
+              three columns. Each die is worth the equivalent amount of points
+              on its face; that is to say, a die with the number 5 on top is
+              worth 5 points, a die with the number 3 on top is worth 3 points,
+              and so on.
+              <Subtitle>Combos & wipes</Subtitle>
+              The real trick, however, comes down to the combos - placing two of
+              the same number in a column will significantly multiply your
+              score. Combos are great for racking up your score, but
+              there&apos;s one more important rule: placing a die removes all
+              dice of the same number on your opponents board. It doesn&apos;t
+              matter if you have three 6s in a column on your side -- if your
+              opponent can place one 6 in their column on the opposite side, it
+              will wipe out all of your dice in that column.
+              <Subtitle>End of the game</Subtitle>A game of Knucklebones ends
+              when one player fills up their side of the board with dice. And
+              yes, that means it&apos;s possible for someone to end the game by
+              placing their last die and lose because they have a lower score
+              than their opponent.
+            </ModalText>
+            <Button onClick={() => setShowRulesModal(false)}>Clear</Button>
+          </ContentWrapper>
+        </ModalContent>
+      </Modal>
       <ContentContainer>
         <Image src={rollingDicesIcon} alt="" height={96} width={96} />
         <Title>Knucklebones</Title>
         <Button onClick={handleCreateGame}>Create game</Button>
         <Button onClick={() => setShowJoinGameModal(true)}>Join game</Button>
+        <Button onClick={() => setShowRulesModal(true)}>Show rules</Button>
       </ContentContainer>
     </HomeAppContainer>
   );
@@ -125,6 +157,10 @@ const RoomCodeContainer = styled.div`
 `;
 
 const RoomCode = styled.code``;
+
+const Subtitle = styled.h4`
+  margin: 0;
+`;
 
 const Title = styled.h1`
   margin: 0px;
@@ -180,7 +216,7 @@ const ModalContent = styled.div`
   flex-direction: column;
 `;
 
-const HorizonalLine = styled.hr`
+const HorizontalLine = styled.hr`
   width: 100%;
 `;
 

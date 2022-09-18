@@ -61,7 +61,6 @@ const DiceSide = styled.div<{ $totalCount: number }>`
   background: white;
   border: 1px solid black;
   padding: 8px;
-  margin: 4px;
 
   ${({ $totalCount }) => {
     switch ($totalCount) {

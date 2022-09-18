@@ -36,9 +36,9 @@ export const useGame = (
         session.firstUserId === currentPlayer.current
           ? session.secondUserId
           : session.firstUserId;
-      const urlParams = new URLSearchParams(Object.entries(session));
 
       socket.on("game-start", (msg) => {
+        setWinner(undefined);
         const {
           activePlayer: activePlayerFromServer,
           gameState: gameStateFromServer,
@@ -90,6 +90,14 @@ export const useGame = (
     });
   };
 
+  const restartSession = () => {
+    if (!socket) {
+      console.error("Socket not connected!");
+      return;
+    }
+    socket.emit("player-ready", currentSession.current);
+  };
+
   return {
     gameState,
     activePlayer,
@@ -100,5 +108,6 @@ export const useGame = (
     myScore,
     opponentScore,
     winner,
+    restartSession,
   };
 };

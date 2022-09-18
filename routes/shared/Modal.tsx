@@ -44,7 +44,8 @@ const ModalContent = styled.div`
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 16px;
-  width: 60%;
+  width: 80%;
+  text-shadow: 4px 4px 20px rgb(0 0 0);
 `;
 
 export default Modal;

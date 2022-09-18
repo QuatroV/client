@@ -8,6 +8,8 @@ import Dice from "./components/Dice";
 import crownIcon from "../../public/crown.svg";
 import Image from "next/image";
 import Throbber from "../shared/Throbber";
+import Button from "../shared/Button";
+import rollingDicesIcon from "../../public/rolling-dices.svg";
 
 const GameApp = ({
   setPage,
@@ -26,6 +28,7 @@ const GameApp = ({
     myScore,
     opponentScore,
     winner,
+    restartSession,
   } = useGame(socket);
 
   if (!gameState || !currentPlayer || !opponentPlayer || !currentDice) {
@@ -60,8 +63,25 @@ const GameApp = ({
   return (
     <GameAppContainer>
       <Modal isOpen={Boolean(winner)} onClose={handleCloseEndGameModal}>
-        <p>{winner === currentPlayer ? "You won!!!" : "You lost :("}</p>
-        <button onClick={handleCloseEndGameModal}>Return to main page</button>
+        <ModalTitle>
+          <Image
+            src={winner === currentPlayer ? crownIcon : rollingDicesIcon}
+            alt=""
+            height={24}
+            width={24}
+          />
+          {winner === currentPlayer ? "You won!!!" : "You lost :("}
+        </ModalTitle>
+        <HorizontalLine />
+        <ContentWrapper>
+          <ModalText>
+            Your score: {myScore}
+            <br />
+            Opponent score: {opponentScore}
+          </ModalText>
+          <Button onClick={handleCloseEndGameModal}>Return to main page</Button>
+          <Button onClick={restartSession}>Restart this session</Button>
+        </ContentWrapper>
       </Modal>
       {opponentTurn && <Dice side={currentDice} />}
       <BoardsContainer>
@@ -71,7 +91,7 @@ const GameApp = ({
             <Dice side={opponentBoardState[0][1]} />
             <Dice side={opponentBoardState[0][2]} />
           </Column>
-          <Column>
+          <Column $isCenter={true}>
             <Dice side={opponentBoardState[1][0]} />
             <Dice side={opponentBoardState[1][1]} />
             <Dice side={opponentBoardState[1][2]} />
@@ -105,7 +125,7 @@ const GameApp = ({
             <Dice side={myBoardState[0][1]} onClick={() => handleClick(0, 1)} />
             <Dice side={myBoardState[0][2]} onClick={() => handleClick(0, 2)} />
           </Column>
-          <Column>
+          <Column $isCenter={true}>
             <Dice side={myBoardState[1][0]} onClick={() => handleClick(1, 0)} />
             <Dice side={myBoardState[1][1]} onClick={() => handleClick(1, 1)} />
             <Dice side={myBoardState[1][2]} onClick={() => handleClick(1, 2)} />
@@ -117,7 +137,11 @@ const GameApp = ({
           </Column>
         </Board>
       </BoardsContainer>
-      {myTurn ? <Dice side={currentDice} /> : <Throbber size={48} />}
+      {myTurn ? (
+        <Dice side={currentDice} />
+      ) : (
+        <TurnInfo>Opponent&apos;s turn</TurnInfo>
+      )}
     </GameAppContainer>
   );
 };
@@ -146,12 +170,13 @@ const glassCSS = css`
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 16px;
+  padding: 8px;
 `;
 
 const Board = styled.div<{ $isActive: boolean }>`
   ${glassCSS}
   display: flex;
+  gap: 4px;
 
   ${({ $isActive }) =>
     $isActive &&
@@ -180,8 +205,42 @@ const Score = styled.div`
   flex-direction: row;
 `;
 
-const Column = styled.div`
+const Column = styled.div<{ $isCenter?: boolean }>`
   flex: 1;
+  gap: 4px;
+  display: flex;
+  flex-direction: column;
+
+  ${({ $isCenter }) =>
+    $isCenter &&
+    css`
+      border-right: 2px dashed white;
+      border-left: 2px dashed white;
+      padding-right: 4px;
+      padding-left: 4px;
+    `}
+`;
+
+const ModalTitle = styled.h2`
+  margin: 0px;
+  color: white;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
+const ModalText = styled.span`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: white;
+  text-align: justify;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 const BoardsContainer = styled.div`
@@ -204,6 +263,14 @@ const OpponentScore = styled.div<{ $isWinning: boolean }>`
   gap: 4px;
 
   ${({ $isWinning }) => $isWinning && css``}
+`;
+
+const HorizontalLine = styled.hr`
+  width: 100%;
+`;
+
+const TurnInfo = styled.div`
+  color: white;
 `;
 
 export default GameApp;

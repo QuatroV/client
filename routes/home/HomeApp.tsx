@@ -116,7 +116,7 @@ const HomeApp = ({
               score. Combos are great for racking up your score, but
               there&apos;s one more important rule: placing a die removes all
               dice of the same number on your opponents board. It doesn&apos;t
-              matter if you have three 6s in a column on your side -- if your
+              matter if you have three 6s in a column on your side - if your
               opponent can place one 6 in their column on the opposite side, it
               will wipe out all of your dice in that column.
               <Subtitle>End of the game</Subtitle>A game of Knucklebones ends

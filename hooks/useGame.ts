@@ -88,6 +88,7 @@ export const useGame = (
       sessionId: currentSession.current?.id,
       roomId: currentSession.current?.roomId,
     });
+    setActivePlayer(undefined);
   };
 
   const restartSession = () => {

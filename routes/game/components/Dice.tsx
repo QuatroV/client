@@ -2,8 +2,9 @@ import { memo } from "react";
 import styled, { css } from "styled-components";
 
 const Dice = ({ side, onClick }: { side: number; onClick?: () => void }) => {
+  const handleClick = () => side === 0 && onClick && onClick();
   return (
-    <DiceSide $totalCount={side} onClick={onClick}>
+    <DiceSide $totalCount={side} onClick={handleClick}>
       {side > 0 &&
         side < 4 &&
         Array(side)

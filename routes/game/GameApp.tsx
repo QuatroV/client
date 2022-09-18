@@ -83,7 +83,7 @@ const GameApp = ({
           <Button onClick={restartSession}>Restart this session</Button>
         </ContentWrapper>
       </Modal>
-      {opponentTurn && <Dice side={currentDice} />}
+      <Dice side={opponentTurn ? currentDice : 0} />
       <BoardsContainer>
         <Board $isActive={opponentTurn}>
           <Column>
@@ -137,11 +137,8 @@ const GameApp = ({
           </Column>
         </Board>
       </BoardsContainer>
-      {myTurn ? (
-        <Dice side={currentDice} />
-      ) : (
-        <TurnInfo>Opponent&apos;s turn</TurnInfo>
-      )}
+      <TurnInfo>Opponent&apos;s turn</TurnInfo>
+      <Dice side={myTurn ? currentDice : 0} />
     </GameAppContainer>
   );
 };
@@ -159,7 +156,7 @@ const GameAppContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 8px;
   transition: all 0.5s ease-out;
 `;
 
@@ -183,8 +180,8 @@ const Board = styled.div<{ $isActive: boolean }>`
     css`
       outline: 3px solid white;
       box-shadow: 0 4px 30px rgba(0, 0, 0);
-      transform: scale(1.05);
-      transition: all 0.5s ease-out;
+      /* transform: scale(1.05);
+      transition: all 0.5s ease-out; */
     `}
 `;
 

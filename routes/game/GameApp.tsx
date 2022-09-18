@@ -10,6 +10,8 @@ import Image from "next/image";
 import Throbber from "../shared/Throbber";
 import Button from "../shared/Button";
 import rollingDicesIcon from "../../public/rolling-dices.svg";
+import MyDice from "./components/MyDice";
+import CurrentDice from "./components/CurrentDice";
 
 const GameApp = ({
   setPage,
@@ -121,24 +123,51 @@ const GameApp = ({
         </ScoreContainer>
         <Board $isActive={myTurn}>
           <Column>
-            <Dice side={myBoardState[0][0]} onClick={() => handleClick(0, 0)} />
-            <Dice side={myBoardState[0][1]} onClick={() => handleClick(0, 1)} />
-            <Dice side={myBoardState[0][2]} onClick={() => handleClick(0, 2)} />
+            <MyDice
+              side={myBoardState[0][0]}
+              onClick={() => handleClick(0, 0)}
+            />
+            <MyDice
+              side={myBoardState[0][1]}
+              onClick={() => handleClick(0, 1)}
+            />
+            <MyDice
+              side={myBoardState[0][2]}
+              onClick={() => handleClick(0, 2)}
+            />
           </Column>
           <Column $isCenter={true}>
-            <Dice side={myBoardState[1][0]} onClick={() => handleClick(1, 0)} />
-            <Dice side={myBoardState[1][1]} onClick={() => handleClick(1, 1)} />
-            <Dice side={myBoardState[1][2]} onClick={() => handleClick(1, 2)} />
+            <MyDice
+              side={myBoardState[1][0]}
+              onClick={() => handleClick(1, 0)}
+            />
+            <MyDice
+              side={myBoardState[1][1]}
+              onClick={() => handleClick(1, 1)}
+            />
+            <MyDice
+              side={myBoardState[1][2]}
+              onClick={() => handleClick(1, 2)}
+            />
           </Column>
           <Column>
-            <Dice side={myBoardState[2][0]} onClick={() => handleClick(2, 0)} />
-            <Dice side={myBoardState[2][1]} onClick={() => handleClick(2, 1)} />
-            <Dice side={myBoardState[2][2]} onClick={() => handleClick(2, 2)} />
+            <MyDice
+              side={myBoardState[2][0]}
+              onClick={() => handleClick(2, 0)}
+            />
+            <MyDice
+              side={myBoardState[2][1]}
+              onClick={() => handleClick(2, 1)}
+            />
+            <MyDice
+              side={myBoardState[2][2]}
+              onClick={() => handleClick(2, 2)}
+            />
           </Column>
         </Board>
       </BoardsContainer>
       <TurnInfo>{myTurn ? "Your turn" : "Opponent's turn"}</TurnInfo>
-      <Dice side={myTurn ? currentDice : 0} />
+      <CurrentDice side={myTurn ? currentDice : 0} />
     </GameAppContainer>
   );
 };

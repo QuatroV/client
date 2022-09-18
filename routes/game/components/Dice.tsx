@@ -1,10 +1,17 @@
-import { memo } from "react";
+import { forwardRef, memo, Ref } from "react";
 import styled, { css } from "styled-components";
+import { ConnectDropTarget, ConnectDragSource } from "react-dnd";
 
-const Dice = ({ side, onClick }: { side: number; onClick?: () => void }) => {
+interface DiceProps {
+  side: number;
+  onClick?: () => void;
+}
+
+const Dice = forwardRef((props: DiceProps, ref: any) => {
+  const { side, onClick } = props;
   const handleClick = () => side === 0 && onClick && onClick();
   return (
-    <DiceSide $totalCount={side} onClick={handleClick}>
+    <DiceSide $totalCount={side} onClick={handleClick} ref={ref}>
       {side > 0 &&
         side < 4 &&
         Array(side)
@@ -53,7 +60,9 @@ const Dice = ({ side, onClick }: { side: number; onClick?: () => void }) => {
       )}
     </DiceSide>
   );
-};
+});
+
+Dice.displayName = "Dice";
 
 const DiceSide = styled.div<{ $totalCount: number }>`
   width: 48px;
@@ -158,4 +167,4 @@ const Dot = styled.div`
 
 const Column = styled.div``;
 
-export default memo(Dice);
+export default Dice;

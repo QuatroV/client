@@ -137,7 +137,7 @@ const GameApp = ({
           </Column>
         </Board>
       </BoardsContainer>
-      <TurnInfo>Opponent&apos;s turn</TurnInfo>
+      <TurnInfo>{myTurn ? "Your turn" : "Opponent's turn"}</TurnInfo>
       <Dice side={myTurn ? currentDice : 0} />
     </GameAppContainer>
   );
@@ -180,8 +180,6 @@ const Board = styled.div<{ $isActive: boolean }>`
     css`
       outline: 3px solid white;
       box-shadow: 0 4px 30px rgba(0, 0, 0);
-      /* transform: scale(1.05);
-      transition: all 0.5s ease-out; */
     `}
 `;
 
@@ -200,6 +198,7 @@ const Score = styled.div`
   background: rgb(197 197 197 / 28%);
   display: flex;
   flex-direction: row;
+  align-items: center;
 `;
 
 const Column = styled.div<{ $isCenter?: boolean }>`

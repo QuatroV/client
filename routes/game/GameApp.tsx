@@ -79,7 +79,7 @@ const GameApp = ({
             <br />
             Opponent score: {opponentScore}
           </ModalText>
-          <Button onClick={handleCloseEndGameModal}>Return to main page</Button>
+          <Button onClick={handleCloseEndGameModal}>Back to main page</Button>
           <Button onClick={restartSession}>Restart this session</Button>
         </ContentWrapper>
       </Modal>

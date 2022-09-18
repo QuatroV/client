@@ -5,6 +5,9 @@ import styled, { css } from "styled-components";
 import { useGame } from "../../hooks/useGame";
 import Modal from "../shared/Modal";
 import Dice from "./components/Dice";
+import crownIcon from "../../public/crown.svg";
+import Image from "next/image";
+import Throbber from "../shared/Throbber";
 
 const GameApp = ({
   setPage,
@@ -26,22 +29,15 @@ const GameApp = ({
   } = useGame(socket);
 
   if (!gameState || !currentPlayer || !opponentPlayer || !currentDice) {
-    console.log(gameState, currentPlayer, opponentPlayer, currentDice);
-    return null;
+    return (
+      <GameAppContainer>
+        <Throbber size={96} />
+      </GameAppContainer>
+    );
   }
-  console.log("currentPlayer ", currentPlayer);
 
   const myBoardState = gameState[currentPlayer];
   const opponentBoardState = gameState[opponentPlayer];
-
-  console.log(
-    "currentPlayer ",
-    currentPlayer,
-    "myBoardState ",
-    myBoardState,
-    "opponentBoardState ",
-    opponentBoardState
-  );
 
   const handleClick = (pos1: number, pos2: number) => {
     if (activePlayer !== currentPlayer) {
@@ -53,6 +49,12 @@ const GameApp = ({
     makeTurn(newState);
   };
 
+  const youWinning = myScore >= opponentScore;
+  const opponentWinning = myScore <= opponentScore;
+
+  const myTurn = activePlayer === currentPlayer;
+  const opponentTurn = activePlayer === opponentPlayer;
+
   const handleCloseEndGameModal = () => setPage("home");
 
   return (
@@ -61,8 +63,9 @@ const GameApp = ({
         <p>{winner === currentPlayer ? "You won!!!" : "You lost :("}</p>
         <button onClick={handleCloseEndGameModal}>Return to main page</button>
       </Modal>
+      {opponentTurn && <Dice side={currentDice} />}
       <BoardsContainer>
-        <Board $isActive={activePlayer === opponentPlayer}>
+        <Board $isActive={opponentTurn}>
           <Column>
             <Dice side={opponentBoardState[0][0]} />
             <Dice side={opponentBoardState[0][1]} />
@@ -81,13 +84,22 @@ const GameApp = ({
         </Board>
         <ScoreContainer>
           <Score>
-            <MyScore $isWinning={myScore >= opponentScore}>{myScore}</MyScore> /{" "}
-            <OpponentScore $isWinning={myScore <= opponentScore}>
+            <MyScore $isWinning={youWinning}>
+              {youWinning && !opponentWinning && (
+                <Image src={crownIcon} alt="" height={24} width={24} />
+              )}
+              {myScore}
+            </MyScore>{" "}
+            /{" "}
+            <OpponentScore $isWinning={opponentWinning}>
               {opponentScore}
+              {opponentWinning && !youWinning && (
+                <Image src={crownIcon} alt="" height={24} width={24} />
+              )}
             </OpponentScore>
           </Score>
         </ScoreContainer>
-        <Board $isActive={activePlayer === currentPlayer}>
+        <Board $isActive={myTurn}>
           <Column>
             <Dice side={myBoardState[0][0]} onClick={() => handleClick(0, 0)} />
             <Dice side={myBoardState[0][1]} onClick={() => handleClick(0, 1)} />
@@ -105,7 +117,7 @@ const GameApp = ({
           </Column>
         </Board>
       </BoardsContainer>
-      <Dice side={currentDice} />
+      {myTurn ? <Dice side={currentDice} /> : <Throbber size={48} />}
     </GameAppContainer>
   );
 };
@@ -124,6 +136,7 @@ const GameAppContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 16px;
+  transition: all 0.5s ease-out;
 `;
 
 const glassCSS = css`
@@ -178,10 +191,18 @@ const BoardsContainer = styled.div`
 `;
 
 const MyScore = styled.div<{ $isWinning: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
   ${({ $isWinning }) => $isWinning && css``}
 `;
 
 const OpponentScore = styled.div<{ $isWinning: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
   ${({ $isWinning }) => $isWinning && css``}
 `;
 

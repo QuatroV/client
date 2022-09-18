@@ -39,8 +39,6 @@ export const useGame = (
       const urlParams = new URLSearchParams(Object.entries(session));
 
       socket.on("game-start", (msg) => {
-        console.log("aaaaaa123");
-        console.log("game-start ", msg);
         const {
           activePlayer: activePlayerFromServer,
           gameState: gameStateFromServer,
@@ -52,7 +50,6 @@ export const useGame = (
       });
 
       socket.on("turn-start", (msg) => {
-        console.log("turn-start ", msg);
         const {
           activePlayer: activePlayerFromServer,
           gameState: gameStateFromServer,
@@ -71,8 +68,6 @@ export const useGame = (
       });
 
       socket.on("game-end", (msg) => {
-        console.log("game-end ", msg);
-
         const { winner } = msg;
         setWinner(winner);
       });
@@ -88,7 +83,6 @@ export const useGame = (
       console.error("Socket not connected!");
       return;
     }
-    console.log("newGameState ", newGameState);
     socket.emit("turn-request", {
       newGameState,
       sessionId: currentSession.current?.id,

@@ -66,7 +66,6 @@ const SocketHandler = (req: any, res: any) => {
     io.on("connection", (socket) => {
       socket.on("create-room", async (msg) => {
         const roomId = generateRoomId();
-        console.log("roomId ", roomId);
         await createSession({
           roomId: roomId,
           firstUserId: socket.id,
@@ -90,13 +89,11 @@ const SocketHandler = (req: any, res: any) => {
       });
 
       socket.on("player-ready", async (msg) => {
-        console.log("AAAAAAAAAA ", msg, "req.query ", req.query);
         const { id: sessionId, roomId } = msg;
         const session = await addActivePlayerAndGameStateToSession(
           Number(sessionId)
         );
         const currentDice = generateDiceSide();
-        console.log("ssesion", session);
         io.to(String(roomId)).emit("game-start", {
           ...session,
           currentDice,
@@ -104,8 +101,6 @@ const SocketHandler = (req: any, res: any) => {
       });
 
       socket.on("turn-request", async (msg) => {
-        console.log("turn requset ", msg);
-
         const { sessionId, newGameState } = msg;
 
         const gameState = deleteDuplicates(newGameState, socket.id);

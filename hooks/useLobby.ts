@@ -45,5 +45,5 @@ export const useLobby = (
     socket.emit("join-room", { roomId });
   };
 
-  return { createRoom, roomId, joinRoom };
+  return { createRoom, roomId, joinRoom, setRoomId };
 };

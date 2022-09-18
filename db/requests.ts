@@ -50,7 +50,6 @@ export const addSecondUserToSession = async (
 export const addActivePlayerAndGameStateToSession = async (
   sessionId: Session["id"]
 ) => {
-  console.log("innnnn ", sessionId);
   try {
     const { data: oldData, error: oldError } = await supabase
       .from<Session>("sessions")
@@ -100,8 +99,6 @@ export const updateGameStateInSession = async (
         ? oldData[0].secondUserId
         : oldData[0].firstUserId;
 
-    console.log("OOOOOOOO ", newActivePlayer);
-
     const { data, error } = await supabase
       .from<Session>("sessions")
       .update({ gameState, activePlayer: newActivePlayer })
@@ -109,8 +106,6 @@ export const updateGameStateInSession = async (
     if (error) {
       throw new Error(error.message + error.details);
     }
-
-    console.log("datadatadatadata ", JSON.stringify(data[0]));
     return data[0];
   } catch (e) {
     console.error(e);
